@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Send Money</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        .main img {
+            height: 100vh;
+        }
+
+        .container {
+            margin-left: 20px;
+        }
+
+        .for {
+            top: 1%;
+            left: 0%;
+            right: 0%;
+            bottom: 0%;
+        }
+
+        .for h1 {
+            text-align: center;
+            margin-top: -15px;
+        }
+
+        h4 {
+            margin-top: -15px;
+            margin-bottom: -5px;
+        }
+
+        .for-in {
+            background-color: #efebeb;
+            width: 100%;
+            border-radius: 25px;
+            padding: 30px;
+        }
+
+        #findReceiverButton{
+            margin-top: 30px;
+            margin-right: 80px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main position-relative">
+        <img src="{{url_for('static', filename='images/banner-1.jpg')}}" class="w-100" alt="banner" />
+        <div class="position-absolute for">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <!-- Flash message section -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="container mt-1">
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }} <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        <div class="for-in">
+                            <form class="row g-3" action="/transaction" method="POST">
+                                <div class="col-md-12">
+                                    <h1>Transfer Money</h1>
+                                </div>
+                                <hr>
+                                <div class="col-lg-12">
+                                    <h4>Your Detail</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" name="email" value="{{email}}" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="number" class="form-control" name="phone" value="{{phone}}" readonly>
+                                </div>
+                                <div class="col-6">
+                                    <label for="inputAddress2" class="form-label">Select Bank</label>
+                                    <select id="bankDropdown" class="form-select" name="bank" required>
+                                        <option selected>Choose...</option>
+                                        {% for bank in banks %}
+                                        <option value="{{ bank }}">{{ bank }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="upi" class="form-label">Your UPI</label>
+                                    <input type="text" class="form-control" name="upi" id="upiID" readonly>
+                                </div>
+                                <hr>
+                                <div class="col-lg-12">
+                                    <h4>Reciever's Detail</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="r_upi" class="form-label">Enter Reciever UPI</label>
+                                    <input type="text" class="form-control" name="r_upi" id="receiverUPI">
+                                </div>
+
+                                <div class="col-md-3" style="text-align: center;">
+                                    <button type="button" class="btn btn-secondary ms-3"
+                                        id="findReceiverButton">Find</button>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="r_name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="r_name" id="receiverName" readonly>
+                                </div>
+
+
+                                <div class="col-md-3">
+                                    <label for="r_bank" class="form-label">Bank</label>
+                                    <input type="text" class="form-control" name="r_bank" id="receiverBank" readonly>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="amount" class="form-label">Amount</label>
+                                    <input type="number" class="form-control" name="r_amount">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pin" class="form-label">Enter your 4 digit PIN</label>
+                                    <input type="text" class="form-control" name="pin">
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <button type="submit" class="btn btn-primary">Send Money</button>
+                                    <a href="/dashboard" class="btn btn-secondary ms-3" role="button">Back</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+// Auto-hide flash messages after 5 seconds
+setTimeout(function () {
+    var alertElement = document.querySelector('.alert');
+    if (alertElement) {
+        var alertInstance = new bootstrap.Alert(alertElement);
+        alertInstance.close();
+    }
+}, 3000); // 5000 milliseconds = 5 seconds
+
+
+
+        document.getElementById('bankDropdown').addEventListener('change', function () {
+            var selectedBank = this.value;
+            var upiIDField = document.getElementById('upiID');
+
+            // Fetch UPI ID for the selected bank from the server
+            axios.post('/get_upi_id', {
+                bank: selectedBank
+            })
+                .then(function (response) {
+                    console.log('UPI ID:', response.data.upi_id);
+                    upiIDField.value = response.data.upi_id;
+                })
+                .catch(function (error) {
+                    console.error('Error fetching UPI ID:', error);
+                    upiIDField.value = '';
+                });
+        });
+
+        document.getElementById('findReceiverButton').addEventListener('click', function () {
+            var receiverUPI = document.getElementById('receiverUPI').value;
+            var receiverNameField = document.getElementById('receiverName');
+            var receiverBankField = document.getElementById('receiverBank');
+
+            // Fetch receiver name for the entered UPI ID from the server
+            axios.post('/get_receiver_name', {
+                upi_id: receiverUPI
+            })
+                .then(function (response) {
+                    console.log('Receiver Name:', response.data.receiver_name);
+                    if (response.data.receiver_name) {
+                        receiverNameField.value = response.data.receiver_name;
+                    } else {
+                        receiverNameField.value = '';
+                        alert('Receiver not found. Please enter a valid UPI ID.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error fetching receiver name:', error);
+                    receiverNameField.value = '';
+                    alert('Error fetching receiver name. Please try again.');
+                });
+
+            // Fetch receiver name for the entered UPI ID from the server
+            axios.post('/get_receiver_bank', {
+                upi_id: receiverUPI
+            })
+                .then(function (response) {
+                    console.log('Receiver Bank:', response.data.receiver_bank);
+                    if (response.data.receiver_bank) {
+                        receiverBankField.value = response.data.receiver_bank;
+                    } else {
+                        receiverBankField.value = '';
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error fetching receiver Bank:', error);
+                    receiverBankField.value = '';
+                    alert('Error fetching receiver Bank. Please try again.');
+                });
+        });
+    </script>
+</body>
+
+</html>
